@@ -37,6 +37,7 @@ var startCmd = &cobra.Command{
 
 		// Register built-in plugins
 		proxyInstance.Plugins.Register(&attack.LoggerPlugin{})
+		proxyInstance.Plugins.Register(attack.NewModifierPlugin())
 
 		if err := proxyInstance.Start(); err != nil {
 			fmt.Printf("Failed to start proxy: %v\n", err)

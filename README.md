@@ -45,6 +45,7 @@ You can specify a custom port and address:
 ### Trust the Root CA
 
 To intercept HTTPS traffic, you must trust the generated Root CA:
+
 1. Locate the CA certificate at `~/.interceptify/ca.crt`.
 2. Install it in your system or browser's trusted certificate store.
 

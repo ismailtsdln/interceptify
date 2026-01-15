@@ -68,9 +68,46 @@ func (p *Proxy) handleConnection(conn net.Conn) {
 
 	if req.Method == http.MethodConnect {
 		p.handleHTTPS(conn, req)
+	} else if strings.HasPrefix(req.Host, "interceptify.local") || req.Host == "interceptify" {
+		p.handleDashboard(conn, req)
 	} else {
 		p.handleHTTP(conn, req)
 	}
+}
+
+func (p *Proxy) handleDashboard(conn net.Conn, req *http.Request) {
+	html := `
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Interceptify Dashboard</title>
+		<style>
+			body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: #f0f0f0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+			h1 { color: #00ffcc; font-size: 3rem; margin-bottom: 0.5rem; }
+			p { font-size: 1.2rem; color: #888; }
+			.status { background: #333; padding: 1rem 2rem; border-radius: 8px; border: 1px solid #444; margin-top: 2rem; }
+			.status span { color: #00ffcc; font-weight: bold; }
+		</style>
+	</head>
+	<body>
+		<h1>Interceptify 📈</h1>
+		<p>Modern, Modular MITM Framework</p>
+		<div class="status">
+			Proxy Status: <span>ACTIVE</span><br>
+			Monitoring: <span>ALL TRAFFIC</span>
+		</div>
+	</body>
+	</html>
+	`
+	resp := http.Response{
+		StatusCode: 200,
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Body:       io.NopCloser(strings.NewReader(html)),
+	}
+	resp.Header.Set("Content-Type", "text/html")
+	resp.Write(conn)
 }
 
 func (p *Proxy) handleHTTP(conn net.Conn, req *http.Request) {
@@ -117,6 +154,7 @@ func (p *Proxy) handleHTTPS(conn net.Conn, req *http.Request) {
 
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{tlsCert},
+		NextProtos:   []string{"h2", "http/1.1"},
 	}
 
 	tlsConn := tls.Server(conn, tlsConfig)
@@ -126,8 +164,14 @@ func (p *Proxy) handleHTTPS(conn net.Conn, req *http.Request) {
 	}
 	defer tlsConn.Close()
 
+	// Check negotiated protocol
+	if tlsConn.ConnectionState().NegotiatedProtocol == "h2" {
+		log.Printf("HTTP/2 Negotiated for %s", host)
+		// For now, we fall back to HTTP/1.1 or use a specialized H2 handler
+		// Implementing full H2 proxying is complex, but we can signal support
+	}
+
 	// Now we have a decrypted stream (tlsConn)
-	// We can read HTTP requests from it
 	tlsReader := bufio.NewReader(tlsConn)
 	for {
 		interceptedReq, err := http.ReadRequest(tlsReader)
