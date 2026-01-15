@@ -114,15 +114,7 @@ func (p *MyPlugin) OnRequest(req *http.Request) (*http.Request, *http.Response) 
 }
 ```
 
-## 🗺️ Roadmap
 
-- [x] Basic HTTP/HTTPS Interception
-- [x] HTTP/2 Support
-- [x] Web Dashboard (Real-time SSE)
-- [x] `go install` Support
-- [ ] WebSocket Interception
-- [ ] Response Replay & Fuzzing
-- [ ] Scriptable Python/Lua Plugins
 
 ## 🤝 Contributing
 
