@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -33,7 +34,7 @@ func (m *Manipulator) ReplaceInBody(resp *http.Response, old, new string) error 
 
 	// Update Content-Length header if it exists
 	if resp.Header.Get("Content-Length") != "" {
-		resp.Header.Set("Content-Length", string(rune(len(newBody))))
+		resp.Header.Set("Content-Length", strconv.Itoa(len(newBody)))
 	}
 
 	return nil

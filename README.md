@@ -5,6 +5,8 @@ Interceptify is a modern, modular, and high-performance Man-In-The-Middle (MITM)
 ## 🚀 Features
 
 - **HTTPS/TLS MITM**: Seamlessly intercept encrypted traffic using dynamic certificate generation.
+- **HTTP/2 Support**: Full support for HTTP/2 multiplexed streams and H2-to-H2 proxying.
+- **Modern Web Dashboard**: Real-time traffic monitoring with a sleek, glassmorphism-inspired UI via SSE.
 - **Modular Plugin System**: Extend functionality with custom hooks for requests and responses.
 - **Cross-Platform**: Built in Go, it runs on Linux, macOS, and Windows.
 - **Built-in Logging**: Real-time traffic logging with the default logger plugin.
@@ -18,12 +20,22 @@ Interceptify is a modern, modular, and high-performance Man-In-The-Middle (MITM)
 
 ## 📦 Installation
 
-To build Interceptify from source, you need Go 1.21 or higher installed.
+### From Source
+
+To build Interceptify from source, you need Go 1.25 or higher installed.
 
 ```bash
 git clone https://github.com/ismailtsdln/interceptify.git
 cd interceptify
 go build -o interceptify main.go
+```
+
+### Using Go Install
+
+You can also install Interceptify directly using `go install`:
+
+```bash
+go install github.com/ismailtsdln/interceptify@latest
 ```
 
 ## 🚥 Usage
